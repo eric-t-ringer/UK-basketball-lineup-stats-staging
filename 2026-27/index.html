@@ -60,6 +60,7 @@
   
   
   
+  
   .kl { font-family: var(--font-anthropic-sans); color: var(--color-fg); display: grid; gap: var(--cds-gap-lg); }
   .kl-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0 0 var(--cds-gap-xs); }
   .kl-take { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); line-height: 1.5; }
@@ -200,7 +201,7 @@
 <body>
 <div style="background:#b3261e;color:#fff;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:6px 12px;letter-spacing:.02em">STAGING — work in progress, not the live site. Live site: <a href="https://eric-t-ringer.github.io/UK-basketball-lineup-stats/" style="color:#fff">eric-t-ringer.github.io/UK-basketball-lineup-stats</a></div>
 <main class="kl-page">
-<nav class="kl-nav" aria-label="Seasons"><a href="../" class="kl-nav-home">← All seasons</a><span class="kl-nav-seasons"><span class="kl-nav-soon" title="Coming soon">2024-25</span> · <span class="kl-nav-soon" title="Coming soon">2025-26</span> · <b aria-current="page">2026-27</b></span></nav>
+<nav class="kl-nav" aria-label="Seasons"><a href="../" class="kl-nav-home">← All seasons</a><span class="kl-nav-seasons"><span class="kl-nav-soon" title="Coming soon">2024-25</span> · <a href="../2025-26/">2025-26</a> · <b aria-current="page">2026-27</b></span></nav>
 <div class="kl">
   <header class="kl-head" id="top">
     <h1>Kentucky lineup tracker, 2026-27</h1>
@@ -528,10 +529,10 @@
     <p>Source: the "Line Up Analysis" page of Kentucky's official box score book for each game, posted on UK Athletics. Each row there is a five-man unit's time on the floor, points for and against, and Kentucky's points per possession.</p>
     <p>Possessions are worked out as points ÷ points per possession, from the box score. For units that didn't score, possessions are estimated from their minutes at that game's pace. OER and DER are points scored and allowed per 100 possessions, using Kentucky's possessions for both ends (over a stretch of play the two teams' possession counts differ by at most one). They're close approximations, not official figures.</p>
     <p>How the measures relate: OER − DER is the scoring margin per 100 possessions. Net /40 is the same margin per 40 minutes, so it also reflects pace: at Kentucky’s exhibition pace of about 69 possessions per 40 minutes, a +10 margin per 100 possessions is about +7 per 40. Adj. /40 is Net /40 pulled toward the team average for small samples; OER and DER are shown unadjusted, so treat them with the same caution on short stints.</p>
-    <p>Exhibitions phase out: the main view includes the three exhibition games until there are three official games. From then on, each new official game replaces the oldest exhibition (the 4th official game replaces Little Rock, the 5th Texas Tech, the 6th UCF), so after six official games the main view is official games only. The exhibitions stay viewable under the "Exhibitions" choice in the Games filter.</p>
+    <p>Exhibitions phase out: the main view includes the exhibition games until there are three official games. From then on, each new official game replaces the oldest exhibition, so a few games later the main view is official games only. The exhibitions stay viewable under the "Exhibitions" choice in the Games filter.</p>
     <p>Adjusted net (Adj. /40): a lineup that played 2 minutes can show +60 per 40 on one run, so raw margins over short stints are mostly noise. The adjusted figure blends each lineup's actual margin with the team's average margin, as if the lineup had also played 50 extra minutes at the team's average. A lineup that has played a few minutes stays close to the team average; one that has played 100+ minutes is judged mostly on its own results. The 50-minute weight is a judgment call, not a fitted value. Rankings and the chart use the adjusted figure. The idea follows Evan Miya's point that observed lineup results should count for more as a lineup logs more possessions.</p>
     <p>Player stats: rebound percentages and usage use team and opponent totals from the box score of each game the player played, and assume his minutes were spread evenly across the game. Usage is (FGA + 0.44 × FTA + TOV) as a share of the team's while he was on the floor. On OER and On DER come from the lineup data, using Kentucky's possessions for both ends.</p>
-    <p>Positions are approximate. Lineups are listed from point guard (1) to center (5) using each player's usual positions: Diallo 1/2; Wilkins 2/1/3; M. Williams 1/2; B. Hawthorne 3/2/4; Z. Hawthorne 2/3; Momcilovic 3/4; N'Diaye and McBride 4/5; Moreno, Kepnang and Potter 5. The 1 goes to the first of Diallo, Wilkins, M. Williams or Morton on the floor. In practice ball-handling is shared (Diallo and M. Williams both bring it up when they play together), so the order is a reading aid, not a record of who played where.</p>
+    <p data-draw="method-positions">Positions are approximate. Lineups are listed from point guard (1) to center (5) using each player's usual positions.</p>
     <p>Notable dates: a big game is a triple-double, 30+ points, 6+ made threes, or 80%+ shooting on at least 10 shots. Streaks are 3+ straight official games with 20+ points or a double-double, and 5+ straight official wins. A starting-lineup change compares each game's starters with the game before.</p>
     <p>Rotation chart: minutes come from each game's box score. Rows are sorted by total minutes in the games shown, so a player who joins late doesn't jump to the top. A starting-lineup change is marked where a game's five starters differ from the game before. On a phone the chart shows the last 10 games of the selection; choose fewer games in the Games filter or a date range to see others.</p>
     <p>On/off chart: it appears once the chosen games include 8 official games, since over fewer games a player's on/off swings by 15+ points per 40 from chance alone. A player is charted if he has played at least a quarter of the team's minutes and sat at least 40 minutes, because the bench side of his line comes from those minutes. The headline names a player only when his gap is more than 15 points per 40 and he has sat at least 80 minutes. The minimum-minutes setting doesn't apply to this chart.</p>
@@ -646,7 +647,7 @@
     fn: (schedule, players) => {
       const SEC = ['Alabama', 'Arkansas', 'Auburn', 'Florida', 'Georgia', 'LSU', 'Mississippi State', 'Missouri', 'Oklahoma', 'Ole Miss', 'South Carolina', 'Tennessee', 'Texas', 'Texas A&M', 'Vanderbilt'];
       // Players out injured at the start of the season (update this list as news changes).
-      const WATCH = [['K. Williams', 'Kam Williams'], ['Morton', 'Jerone Morton'], ['Noah', 'Trent Noah']];
+      const WATCH = (window.KL_SEASON || {}).watch || [['K. Williams', 'Kam Williams'], ['Morton', 'Jerone Morton'], ['Noah', 'Trent Noah']];
       const md = (d) => ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][Number(d.slice(5, 7)) - 1] + ' ' + Number(d.slice(8, 10));
       const lastDate = players.reduce((m, p) => p.date > m ? p.date : m, '');
       const sorted = schedule.slice().sort((a, b) => a.date < b.date ? -1 : 1);
@@ -713,7 +714,7 @@
         a.seconds += r.seconds; a.uk_pts += r.uk_pts; a.opp_pts += r.opp_pts; a.poss += r.poss; a.tov += r.tov; a.g.add(r.game_id);
         acc.set(k, a);
       }));
-      return [...acc.values()].map((a) => ({
+      return [...acc.values()].filter((a) => a.seconds > 0).map((a) => ({
         scope: a.scope, lineup: a.lineup, players: a.players, games: a.g.size,
         minutes: Math.round(a.seconds / 6) / 10, share: a.seconds / scopeSecs[a.scope],
         // Minutes per game across every game in the chosen set, including games the lineup didn't play.
@@ -766,7 +767,7 @@
           }));
         });
       });
-      return [...acc.values()].map((a) => ({scope: a.scope, size: a.size, combo: a.combo, games: a.g.size,
+      return [...acc.values()].filter((a) => a.seconds > 0).map((a) => ({scope: a.scope, size: a.size, combo: a.combo, games: a.g.size,
         minutes: Math.round(a.seconds / 6) / 10, uk_pts: a.uk_pts, opp_pts: a.opp_pts, score: a.uk_pts + '–' + a.opp_pts, plus_minus: a.uk_pts - a.opp_pts,
         net40: Math.round((a.uk_pts - a.opp_pts) / a.seconds * 2400 * 10) / 10,
         adj_net40: Math.round(((a.uk_pts - a.opp_pts) + PRIOR_SECONDS * scopePm[a.scope] / scopeSecs[a.scope]) / (a.seconds + PRIOR_SECONDS) * 2400 * 10) / 10,
@@ -978,12 +979,12 @@
 
   // Approximate positions, for display order only (point guard to center). Each player's positions in order of preference;
   // the 1 goes to the first of POINT_PRIORITY on the floor, then the rest fill the spots closest to their preferences.
-  const POSITIONS = {
+  const POSITIONS = (window.KL_SEASON || {}).positions || {
     'Diallo': [1, 2], 'Wilkins': [2, 1, 3], 'M. Williams': [1, 2], 'Morton': [2, 1, 3],
     'Z. Hawthorne': [2, 3], 'Noah': [2, 3, 4], 'B. Hawthorne': [3, 2, 4], 'K. Williams': [3, 2, 4],
     'Momcilovic': [3, 4], "N'Diaye": [4, 5], 'McBride': [4, 5], 'Moreno': [5], 'Kepnang': [5], 'Potter': [5],
   };
-  const POINT_PRIORITY = ['Diallo', 'Wilkins', 'M. Williams', 'Morton'];
+  const POINT_PRIORITY = (window.KL_SEASON || {}).point_priority || ['Diallo', 'Wilkins', 'M. Williams', 'Morton'];
   const orderCache = new Map();
   const perms = (a) => a.length <= 1 ? [a] : a.flatMap((x, i) => perms([...a.slice(0, i), ...a.slice(i + 1)]).map((p) => [x, ...p]));
   // A lineup's five players in 1-to-5 order; anything else (pairs, trios, unknown players) sorts by usual position.
@@ -1075,7 +1076,7 @@
     const s = kl.rows('schedule'); if (!s) return kl.dash(el);
     const today = new Date().toISOString().slice(0, 10);
     const g = s.filter((x) => !x.result && x.date >= today).sort((a, b) => a.date < b.date ? -1 : 1)[0];
-    if (!g) { el.textContent = 'none scheduled'; return; }
+    if (!g) { el.textContent = s.length && s.every((x) => x.result) ? 'season complete' : 'none scheduled'; return; }
     el.setAttribute('data-where', 'game_id=' + kl.enc(g.game_id));
     el.textContent = (g.site === 'Away' ? 'at ' : 'vs. ') + g.opponent;
   });
@@ -1188,8 +1189,8 @@
   };
   dash.draw('rot-head', (el) => {
     const {games} = rotGames(), p = dash.params(), last = games[games.length - 1];
-    el.textContent = ROTATION_HEADLINE.text && kl.scope() === 'all' && !p.from && !p.to && last && last.game_id === ROTATION_HEADLINE.through
-      ? ROTATION_HEADLINE.text : 'Who has played, game by game';
+    const H = (window.KL_SEASON || {}).rotation_headline || ROTATION_HEADLINE;
+    el.textContent = H.text && kl.scope() === 'all' && !p.from && !p.to && last && last.game_id === H.through ? H.text : 'Who has played, game by game';
   });
   const rotNarrow = (el) => (el.clientWidth || 700) < 520;
   dash.draw('rot-dek', (el) => {
@@ -1310,7 +1311,8 @@
   const listNames = (n) => n.length === 1 ? n[0] : n.slice(0, -1).join(', ') + (n.length > 2 ? ',' : '') + ' and ' + n[n.length - 1];
   dash.draw('onoff-head', (el) => {
     const st = onoffState(), p = dash.params();
-    if (ONOFF_HEADLINE.text && kl.scope() === 'all' && !p.from && !p.to && st.games === ONOFF_HEADLINE.official_games) { el.textContent = ONOFF_HEADLINE.text; return; }
+    const H = (window.KL_SEASON || {}).onoff_headline || ONOFF_HEADLINE;
+    if (H.text && kl.scope() === 'all' && !p.from && !p.to && st.games === H.official_games) { el.textContent = H.text; return; }
     // Name only the players at the top of the chart, in order, while each clears the headline bar; if the top row doesn't, the headline stays neutral.
     const lead = [];
     if (st.ready) for (const r of st.charted.slice(0, 2)) { if (r.on_off > ONOFF.headGap && r.off_minutes >= ONOFF.headOff) lead.push(r.player); else break; }
@@ -1397,6 +1399,14 @@
   });
   dash.draw('up-next', (el) => { const m = (kl.rows('notables_meta') || [])[0]; if (!m) return kl.dash(el); el.setAttribute('data-where', 'key=season'); el.textContent = m.next_milestone; });
   dash.draw('up-await', (el) => { const m = (kl.rows('notables_meta') || [])[0]; if (!m) return kl.dash(el); el.setAttribute('data-where', 'key=season'); el.textContent = m.awaiting; });
+  dash.draw('method-positions', (el) => {
+    const groups = new Map();
+    Object.entries(POSITIONS).forEach(([n, ps]) => { const k = ps.join('/'); (groups.get(k) || groups.set(k, []).get(k)).push(n); });
+    const list = [...groups.entries()].sort((a, b) => a[0].localeCompare(b[0])).map(([k, ns]) => (ns.length > 1 ? ns.slice(0, -1).join(', ') + ' and ' + ns[ns.length - 1] : ns[0]) + ' ' + k).join('; ');
+    const pp = POINT_PRIORITY.length > 1 ? POINT_PRIORITY.slice(0, -1).join(', ') + ' or ' + POINT_PRIORITY[POINT_PRIORITY.length - 1] : POINT_PRIORITY[0];
+    el.textContent = `Positions are approximate. Lineups are listed from point guard (1) to center (5) using each player's usual positions, in order of preference: ${list}. The 1 goes to the first of ${pp} on the floor. In practice ball-handling is shared, so the order is a reading aid, not a record of who played where.`;
+  });
+
   dash.draw('events', (ul) => {
     ul.replaceChildren();
     const rows = (kl.rows('notables') || []).slice(0, 8);
