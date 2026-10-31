@@ -81,7 +81,7 @@
   .wrap { max-width: 980px; margin: 0 auto; padding: 24px 16px 40px; }
   header { background: linear-gradient(135deg, var(--uk-blue) 0%, var(--uk-blue-deep) 100%); color: #fff; border-radius: 14px; padding: 30px 26px 26px; }
   header h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: clamp(1.6rem, 4.5vw, 2.3rem); margin: 0 0 8px; line-height: 1.15; }
-  header p { margin: 0; color: rgba(255,255,255,.85); font-size: var(--cds-font-size-body); line-height: 1.5; max-width: 40rem; }
+  header p { margin: 0; color: rgba(255,255,255,.85); font-size: var(--cds-font-size-body); line-height: 1.5; max-width: 62rem; text-wrap: pretty; }
   .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: var(--cds-gap-md); margin: var(--cds-gap-lg) 0; }
   .card { display: block; background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); color: inherit; text-decoration: none; }
   .card.ready { border-top: 4px solid var(--accent); }
@@ -90,9 +90,10 @@
   .card .tag { margin: 0; font-size: 0.72rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; color: var(--color-fg-muted); }
   .card h2 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; margin: 4px 0 0; color: var(--accent); }
   .card .sub { margin: 0 0 10px; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
-  .card .stats { margin: 0; font-size: var(--cds-font-size-body); line-height: 1.5; }
+  .card .stats { margin: 0; font-size: var(--cds-font-size-body); line-height: 1.5; text-wrap: pretty; }
+  .card .ps { margin: 2px 0 0; font-size: var(--cds-font-size-body); line-height: 1.5; text-wrap: pretty; }
   .card .go { margin: 12px 0 0; color: var(--accent); font-weight: 600; font-size: var(--cds-font-size-caption); }
-  .about { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.6; max-width: 46rem; }
+  .about { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.6; max-width: 62rem; text-wrap: pretty; }
   .about p { margin: 0 0 8px; }
   @media (prefers-color-scheme: dark) { header { background: linear-gradient(135deg, #0a2a6e 0%, #061b47 100%); } }
 </style>
@@ -110,18 +111,21 @@
       <h2>2026-27</h2>
       <p class="sub">Pope's third season</p>
       <p class="stats" data-stats>Loading…</p>
+      
       <p class="go">Open 2026-27 →</p>
     </a><a class="card ready" href="2025-26/" data-season="2025-26">
       <p class="tag">Season 2</p>
       <h2>2025-26</h2>
       <p class="sub">Pope's second season</p>
       <p class="stats" data-stats>Loading…</p>
+      <p class="ps">Reached the <b>NCAA second round</b> as a No.&nbsp;7 seed.</p>
       <p class="go">Open 2025-26 →</p>
     </a><a class="card ready" href="2024-25/" data-season="2024-25">
       <p class="tag">Season 1</p>
       <h2>2024-25</h2>
       <p class="sub">Pope's first season</p>
       <p class="stats" data-stats>Loading…</p>
+      <p class="ps">Reached the <b>NCAA Sweet 16</b> as a No.&nbsp;3 seed.</p>
       <p class="go">Open 2024-25 →</p>
     </a>
   </section>
@@ -143,7 +147,8 @@
       const today = new Date().toISOString().slice(0, 10);
       const next = sched.filter((g) => !g.result && g.date >= today).sort((a, b) => a.date < b.date ? -1 : 1)[0];
       const exh = games.length - off.length;
-      if (!off.length) out.textContent = (next ? `Season opens ${md(next.date)} ${next.site === 'Away' ? 'at' : 'vs.'} ${next.opponent}. ` : '') + (exh ? `${exh} exhibition game${exh === 1 ? '' : 's'} in the data so far.` : '');
+      if (!off.length) out.textContent = (next ? `Season opens ${md(next.date)} ${next.site === 'Away' ? 'at' : 'vs.'} ${next.opponent}. ` : '') + (exh ? `${exh} exhibition game${exh === 1 ? '' : 's'} in the data so far.` : '');
+      else if (sched.every((g) => g.result)) out.innerHTML = `Finished <b>${w}–${l}</b>.`;
       else out.innerHTML = `<b>${w}–${l}</b> in ${off.length} official game${off.length === 1 ? '' : 's'}. Data through ${games[games.length - 1].opponent}, ${md(games[games.length - 1].date)}.`;
     } catch (e) { out.textContent = ''; }
   });
