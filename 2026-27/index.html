@@ -64,6 +64,7 @@
   
   
   
+  
   .kl { font-family: var(--font-anthropic-sans); color: var(--color-fg); display: grid; gap: var(--cds-gap-lg); }
   .kl-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0 0 var(--cds-gap-xs); }
   .kl-take { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); line-height: 1.5; }
@@ -76,6 +77,8 @@
   .kl-events li { display: grid; grid-template-columns: 4.2rem 1fr; gap: var(--cds-gap-sm); padding: 8px 0; border-bottom: 1px solid var(--color-border-line); font-size: var(--cds-font-size-caption); line-height: 1.45; }
   .kl-events .kl-ev-date { color: var(--color-fg-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .kl-events .kl-ev-kind { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); }
+  .kl-more { all: unset; cursor: pointer; display: inline-block; margin-top: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); font-weight: 600; color: var(--accent, #3b6fd8); }
+  .kl-more:hover, .kl-more:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
   .kl-upcoming { margin: var(--cds-gap-md) 0 0; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.6; }
   .kl .kl-upcoming b { color: var(--color-fg); font-weight: 600; }
   .kl-controls { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); align-items: end; }
@@ -261,6 +264,7 @@
     <h2>Notable dates</h2>
     <p class="kl-note">Milestones, debuts, starting-lineup changes, big games and streaks, newest first. Covers the whole season, whatever the filters are set to. Streaks count official games only.</p>
     <ul class="kl-events" data-draw="events" data-source="notables"></ul>
+    <button type="button" class="kl-more" hidden></button>
     <p class="kl-upcoming"><span class="kl-up-next" hidden>Coming up: <b data-draw="up-next" data-source="notables_meta" data-field="next_milestone">—</b>.</span> <span class="kl-up-await" hidden>Awaiting season debut: <b data-draw="up-await" data-source="notables_meta" data-field="awaiting">—</b>.</span></p>
   </section>
 
@@ -608,11 +612,19 @@
         lines.filter((p) => p.seconds > 0).forEach((p) => {
           if (!seen.has(p.player) && gi > 0) add(g, 'Debut', `${p.full_name} plays his first minutes of the season (${Math.round(p.seconds / 60)} min, ${p.pts} pts)`, 1);
           seen.add(p.player);
+          // One line per player per game, combining every feat he hit that night.
           const tens = ['pts', 'reb', 'ast', 'stl', 'blk'].filter((k) => p[k] >= 10).length;
-          if (tens >= 3) add(g, 'Big game', `${p.full_name}: triple-double (${p.pts} pts, ${p.reb} reb, ${p.ast} ast) ${vs(g)}`, 2);
-          if (p.pts >= 30) add(g, 'Big game', `${p.full_name}: ${p.pts} points ${vs(g)}`, 2);
-          if (p.tpm >= 6) add(g, 'Hot shooting', `${p.full_name}: ${p.tpm}-of-${p.tpa} from three ${vs(g)}`, 3);
-          if (p.fga >= 10 && p.fgm / p.fga >= 0.8) add(g, 'Hot shooting', `${p.full_name}: ${p.fgm}-of-${p.fga} shooting ${vs(g)}`, 3);
+          const td = tens >= 3, thirty = p.pts >= 30, threes = p.tpm >= 6, hot = p.fga >= 10 && p.fgm / p.fga >= 0.8;
+          if (td || thirty || threes || hot) {
+            const parts = [];
+            if (td) parts.push(`triple-double (${p.pts} pts, ${p.reb} reb, ${p.ast} ast)`);
+            else parts.push(`${p.pts} points`);
+            if (threes) parts.push(`${p.tpm}-of-${p.tpa} from three`);
+            // Skip the overall shooting line when every shot was a three (it would repeat the line above).
+            if (hot && !(threes && p.fga === p.tpa)) parts.push(`${p.fgm}-of-${p.fga} shooting`);
+            if (!thirty && !td) parts.push(parts.shift());
+            add(g, td || thirty ? 'Big game' : 'Hot shooting', `${p.full_name}: ${parts.join(', ')} ${vs(g)}`, td || thirty ? 2 : 3);
+          }
         });
         const starters = lines.filter((p) => p.started).map((p) => p.player).sort();
         const official = g.game_type !== 'Exhibition';
@@ -1454,7 +1466,13 @@
 
   dash.draw('events', (ul) => {
     ul.replaceChildren();
-    const rows = (kl.rows('notables') || []).slice(0, 8);
+    const all = kl.rows('notables') || [], rows = kl.eventsAll ? all : all.slice(0, 8);
+    const more = ul.parentElement.querySelector('.kl-more');
+    if (more) {
+      more.hidden = all.length <= 8;
+      more.textContent = kl.eventsAll ? 'Show fewer' : `Show all ${all.length}`;
+      more.onclick = () => { kl.eventsAll = !kl.eventsAll; dash.draw('events'); };
+    }
     const fmt = d3.utcFormat('%b %-d');
     rows.forEach((r) => {
       const li = document.createElement('li');
