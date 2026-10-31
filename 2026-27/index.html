@@ -71,6 +71,7 @@
   
   
   
+  
   .kl { font-family: var(--font-anthropic-sans); color: var(--color-fg); display: grid; gap: var(--cds-gap-lg); }
   .kl-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0 0 var(--cds-gap-xs); }
   .kl-take { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); line-height: 1.5; }
@@ -155,6 +156,8 @@
   .kl-method { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.5; }
   .kl-method h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); color: var(--color-fg); margin: 0 0 var(--cds-gap-xs); }
   .kl-method p { margin: 0 0 var(--cds-gap-xs); }
+  .kl-method .kl-credit { margin-top: var(--cds-gap-sm); color: var(--cds-color-fg, inherit); }
+  .kl-method .kl-credit a { color: inherit; text-underline-offset: 3px; }
   .kl th.kl-left, .kl td.kl-left { text-align: left; }
   /* Postseason summary (completed seasons) */
   #postseason h2 { margin: 0 0 var(--cds-gap-md); }
@@ -583,6 +586,7 @@
     <p>On/off chart: it appears once the chosen games include 8 official games, since over fewer games a player's on/off swings by 15+ points per 40 from chance alone. A player is charted if he has played at least a quarter of the team's minutes and sat at least 40 minutes, because the bench side of his line comes from those minutes. The headline names a player only when his gap is more than 15 points per 40 and he has sat at least 80 minutes. The minimum-minutes setting doesn't apply to this chart.</p>
     <p>Combinations: pair and trio numbers pool every stint those players shared, so they gather minutes faster than full lineups. They also credit or blame the players for whoever else was on the floor.</p>
     <p>Unofficial fan project, not affiliated with the University of Kentucky. Lineup data comes from the official box scores posted at ukathletics.com and is added the morning after each game.</p>
+    <p class="kl-credit">Created by <a href="https://www.linkedin.com/in/ericringer/" target="_blank" rel="noopener noreferrer">Eric T. Ringer</a>.</p>
   </section>
 </div>
 

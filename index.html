@@ -75,6 +75,7 @@
   
   
   
+  
 
   :root { --uk-blue: #0033a0; --uk-blue-deep: #002579; }
   body { margin: 0; background: var(--color-bg); color: var(--color-fg); font-family: var(--font-anthropic-sans); }
@@ -95,6 +96,8 @@
   .card .go { margin: 12px 0 0; color: var(--accent); font-weight: 600; font-size: var(--cds-font-size-caption); }
   .about { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.6; max-width: 62rem; text-wrap: pretty; }
   .about p { margin: 0 0 8px; }
+  .about a { color: var(--accent); text-underline-offset: 3px; }
+  .about .credit { color: var(--color-fg); }
   @media (prefers-color-scheme: dark) { header { background: linear-gradient(135deg, #0a2a6e 0%, #061b47 100%); } }
 </style>
 </head>
@@ -132,6 +135,7 @@
   <section class="about">
     <p>The current season is updated the morning after each game. Earlier seasons are complete and don't change.</p>
     <p>Unofficial fan project, not affiliated with the University of Kentucky. Data comes from the official box scores posted at ukathletics.com.</p>
+    <p class="credit">Created by <a href="https://www.linkedin.com/in/ericringer/" target="_blank" rel="noopener noreferrer">Eric T. Ringer</a>.</p>
   </section>
 </main>
 <script>
