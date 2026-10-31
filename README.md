@@ -13,7 +13,7 @@ The morning after each game, a scheduled task reads the "Line Up Analysis" and b
 - `data/kentucky_player_games.json` — each player's box score line per game (player stats tables, Notable dates)
 - `data/kentucky_team_games.json` — Kentucky's and the opponent's team totals per game (rebound percentages, usage)
 
-The page (`index.html` + `shim.js`) computes every figure in the browser from those two files. d3 v7.9.0 is bundled in `vendor/` (ISC license), so the page loads nothing from other servers.
+The page (`index.html` + `shim.js`) computes every figure in the browser from those two files. d3 v7.9.0 is bundled in `vendor/` (ISC license), so the page loads nothing from other servers except an anonymous, cookie-free page-view counter (GoatCounter).
 
 Unofficial fan project, not affiliated with the University of Kentucky.
 
