@@ -70,6 +70,7 @@
   
   
   
+  
   .kl { font-family: var(--font-anthropic-sans); color: var(--color-fg); display: grid; gap: var(--cds-gap-lg); }
   .kl-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0 0 var(--cds-gap-xs); }
   .kl-take { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); line-height: 1.5; }
@@ -90,11 +91,13 @@
   .kl-events li[data-kind="debut"] { --kc: #7c3aed; }
   .kl-events li[data-kind="starting-lineup"] { --kc: #1d4ed8; }
   .kl-events li[data-kind="milestone"] { --kc: var(--color-fg-muted); }
+  .kl-events li[data-kind="season"] { --kc: #0e7490; }
   @media (prefers-color-scheme: dark) {
     .kl-events li[data-kind="big-game"] { --kc: #f0b429; }
     .kl-events li[data-kind="hot-shooting"] { --kc: #fb923c; }
     .kl-events li[data-kind="streak"] { --kc: #4ade80; }
     .kl-events li[data-kind="debut"] { --kc: #c4b5fd; }
+    .kl-events li[data-kind="season"] { --kc: #67e8f9; }
     .kl-events li[data-kind="starting-lineup"] { --kc: #93b4ff; }
   }
   .kl-events li.kl-ev-empty { display: block; grid-column: 1 / -1; color: var(--color-fg-muted); border-bottom: none; }
@@ -285,7 +288,7 @@
 
   <section class="kl-card" id="notable-dates">
     <h2>Notable dates</h2>
-    <p class="kl-note">Milestones, debuts, big games and streaks, newest first. Starting-lineup changes are marked on the rotation chart. Covers the whole season, whatever the filters are set to. Streaks count official games only.</p>
+    <p class="kl-note">Milestones, debuts, big games and streaks, newest first; finished seasons also note anyone who scored 20+ or had a double-double in at least half the games. Starting-lineup changes are marked on the rotation chart. Covers the whole season, whatever the filters are set to. Streaks count official games only.</p>
     <ul class="kl-events" data-draw="events" data-source="notables"></ul>
     <button type="button" class="kl-more" hidden></button>
     <p class="kl-upcoming"><span class="kl-up-next" hidden>Coming up: <b data-draw="up-next" data-source="notables_meta" data-field="next_milestone">—</b>.</span> <span class="kl-up-await" hidden>Awaiting season debut: <b data-draw="up-await" data-source="notables_meta" data-field="awaiting">—</b>.</span></p>
@@ -667,8 +670,23 @@
           flush();
         });
       };
+      const dd = (p) => ['pts', 'reb', 'ast', 'stl', 'blk'].filter((k) => p[k] >= 10).length >= 2;
       streaks((p) => p.pts >= 20, '20+ points');
-      streaks((p) => ['pts', 'reb', 'ast', 'stl', 'blk'].filter((k) => p[k] >= 10).length >= 2, 'a double-double');
+      streaks(dd, 'a double-double');
+      // Finished seasons: credit players who reached a mark in at least half of the team's official games.
+      const seasonDone = schedule.length > 0 && schedule.every((g) => g.result);
+      if (seasonDone && off.length) {
+        const lastG = off[off.length - 1].g;
+        [[(p) => p.pts >= 20, '20+ points'], [dd, 'a double-double']].forEach(([test, label]) => {
+          [...new Set(players.map((p) => p.player))].forEach((n) => {
+            const hits = off.filter(({lines}) => { const p = lines.find((x) => x.player === n); return p && test(p); }).length;
+            if (hits >= off.length / 2) {
+              const full = (players.find((p) => p.player === n) || {}).full_name || n;
+              add(lastG, 'Season', `${full}: ${label} in ${hits} of ${off.length} games`, 0);
+            }
+          });
+        });
+      }
       // Team win streaks (official games with results)
       let wins = [];
       const flushW = () => { if (wins.length >= 5) { const l = wins[wins.length - 1]; add(l, 'Streak', `Team: ${wins.length} straight wins (${md(wins[0].date)}–${md(l.date)})`, 5); } wins = []; };
@@ -1482,6 +1500,7 @@
     'big-game': '<path d="M8 21h8"/><path d="M12 16v5"/><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 6h3v1a3 3 0 0 1-3 3"/><path d="M7 6H4v1a3 3 0 0 0 3 3"/>',
     'hot-shooting': '<path d="M12 22a7 7 0 0 0 7-7c0-3.5-2.5-5.5-4-8-1 2-2 3-3.5 3.5C11.5 8 11 5 9 3c0 4-5 6.5-5 12a7 7 0 0 0 8 7z"/>',
     'streak': '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+    'season': '<circle cx="12" cy="9" r="5"/><path d="M8.5 13.5L7 21l5-2.5 5 2.5-1.5-7.5"/>',
   };
 
   dash.draw('events', (ul) => {
