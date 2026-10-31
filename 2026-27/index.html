@@ -61,6 +61,8 @@
   
   
   
+  
+  
   .kl { font-family: var(--font-anthropic-sans); color: var(--color-fg); display: grid; gap: var(--cds-gap-lg); }
   .kl-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0 0 var(--cds-gap-xs); }
   .kl-take { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); line-height: 1.5; }
@@ -127,12 +129,12 @@
   .kl th.kl-left, .kl td.kl-left { text-align: left; }
   /* Rotation heatmap */
   #rotation .kl-headline { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.2; margin: 0 0 var(--cds-gap-xs); }
-  #rotation .kl-dek { margin: 0 0 var(--cds-gap-md); font-size: var(--cds-font-size-body); color: var(--color-fg-muted); line-height: 1.5; max-width: 46rem; }
+  #rotation .kl-dek { margin: 0 0 var(--cds-gap-md); font-size: var(--cds-font-size-body); color: var(--color-fg-muted); line-height: 1.5; max-width: 64rem; text-wrap: pretty; }
   #rotation .kl-rot-chart { position: relative; }
   #rotation .kl-note { margin: var(--cds-gap-sm) 0 0; }
   /* On/off dumbbell chart */
   #onoff .kl-headline { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.2; margin: 0 0 var(--cds-gap-xs); }
-  #onoff .kl-dek { margin: 0 0 var(--cds-gap-md); font-size: var(--cds-font-size-body); color: var(--color-fg-muted); line-height: 1.5; max-width: 46rem; }
+  #onoff .kl-dek { margin: 0 0 var(--cds-gap-md); font-size: var(--cds-font-size-body); color: var(--color-fg-muted); line-height: 1.5; max-width: 64rem; text-wrap: pretty; }
   #onoff .kl-dek b { font-weight: 600; }
   #onoff .kl-onoff-chart { position: relative; }
   #onoff .kl-onoff-wait { margin: 0; padding: var(--cds-pad-lg); border: 1px dashed var(--color-border-line); border-radius: var(--cds-radius); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.5; }
@@ -1324,7 +1326,8 @@
     const on = document.createElement('b'); on.style.color = dash.colors[0]; on.textContent = 'with a player on the floor';
     const off = document.createElement('b'); off.style.color = 'var(--color-fg-muted)'; off.textContent = 'with him on the bench';
     const worse = document.createElement('b'); worse.style.color = 'var(--cds-chart-status-critical)'; worse.textContent = 'Red';
-    el.append("Each line connects Kentucky's scoring margin per 40 minutes ", on, ' and ', off, '. Long blue lines mark the players the team has leaned on. ', worse, ' lines mean the team has done better with him sitting.');
+    const sch = kl.rows('schedule') || [], done = sch.length > 0 && sch.every((x) => x.result);
+    el.append("Each line connects Kentucky's scoring margin per 40 minutes ", on, ' and ', off, done ? '. Long blue lines mark the players the team leaned on. ' : '. Long blue lines mark the players the team has leaned on. ', worse, done ? ' lines mean the team did better with him sitting.' : ' lines mean the team has done better with him sitting.');
   });
   dash.draw('onoff-wait', (el) => {
     const st = onoffState();
