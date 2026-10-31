@@ -63,6 +63,7 @@
   
   
   
+  
   .kl { font-family: var(--font-anthropic-sans); color: var(--color-fg); display: grid; gap: var(--cds-gap-lg); }
   .kl-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0 0 var(--cds-gap-xs); }
   .kl-take { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); line-height: 1.5; }
@@ -127,6 +128,17 @@
   .kl-method h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); color: var(--color-fg); margin: 0 0 var(--cds-gap-xs); }
   .kl-method p { margin: 0 0 var(--cds-gap-xs); }
   .kl th.kl-left, .kl td.kl-left { text-align: left; }
+  /* Postseason summary (completed seasons) */
+  #postseason h2 { margin: 0 0 var(--cds-gap-md); }
+  #postseason .kl-ps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--cds-gap-lg); }
+  #postseason h3 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.35rem; margin: 0; color: var(--color-fg); }
+  #postseason .kl-ps-sub { margin: 2px 0 var(--cds-gap-sm); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  #postseason .kl-ps-sub b { color: var(--color-fg); font-weight: 600; }
+  #postseason ol { list-style: none; margin: 0; padding: 0; }
+  #postseason li { display: grid; grid-template-columns: 3.6rem 7.5rem 1fr auto; gap: var(--cds-gap-sm); padding: 7px 0; border-top: 1px solid var(--color-border-line); font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; align-items: baseline; }
+  #postseason li .kl-ps-date, #postseason li .kl-ps-round { color: var(--color-fg-muted); }
+  #postseason li .kl-ps-res { font-weight: 600; text-align: right; }
+  @media (max-width: 640px) { #postseason li { grid-template-columns: 3.2rem 1fr auto; } #postseason li .kl-ps-round { display: none; } }
   /* Rotation heatmap */
   #rotation .kl-headline { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.2; margin: 0 0 var(--cds-gap-xs); }
   #rotation .kl-dek { margin: 0 0 var(--cds-gap-md); font-size: var(--cds-font-size-body); color: var(--color-fg-muted); line-height: 1.5; max-width: 64rem; text-wrap: pretty; }
@@ -197,7 +209,7 @@
     .kl-head .kl-next { color: rgba(255,255,255,.78); }
   }
 </style>
-<script>window.KL_SEASON = {"positions": {"Lowe": [1], "Aberdeen": [1, 2], "Johnson": [2, 1], "Horn": [2, 1], "Chandler": [2, 1, 3], "Oweh": [2, 3], "Noah": [3, 4, 2], "K. Williams": [3, 2, 4], "B. Hawthorne": [3, 2, 4], "Tow": [3, 4], "Dioubate": [4, 3], "Quaintance": [4, 5], "Jelavic": [4, 5], "Garrison": [5, 4], "Moreno": [5], "Potter": [5]}, "point_priority": ["Lowe", "Aberdeen", "Johnson", "Chandler"], "watch": [], "rotation_headline": {"text": "Oweh and Aberdeen played the most, and Jelavic started every game from mid-January", "through": "2026-03-22-iowa-state"}, "onoff_headline": {"text": "Kentucky was far better with K. Williams on the floor; no one else came close", "official_games": 36}};</script>
+<script>window.KL_SEASON = {"positions": {"Lowe": [1], "Aberdeen": [1, 2], "Johnson": [2, 1], "Horn": [2, 1], "Chandler": [2, 1, 3], "Oweh": [2, 3], "Noah": [3, 4, 2], "K. Williams": [3, 2, 4], "B. Hawthorne": [3, 2, 4], "Tow": [3, 4], "Dioubate": [4, 3], "Quaintance": [4, 5], "Jelavic": [4, 5], "Garrison": [5, 4], "Moreno": [5], "Potter": [5]}, "point_priority": ["Lowe", "Aberdeen", "Johnson", "Chandler"], "watch": [], "rotation_headline": {"text": "Oweh and Aberdeen played the most, and Jelavic started every game from mid-January", "through": "2026-03-22-iowa-state"}, "onoff_headline": {"text": "Kentucky was far better with K. Williams on the floor; no one else came close", "official_games": 36}, "postseason": [{"event": "SEC Tournament", "seed": "No. 9 seed", "finish": "Lost in the quarterfinals", "rounds": {"2026-03-11-lsu": "First round", "2026-03-12-missouri": "Second round", "2026-03-13-florida": "Quarterfinal"}}, {"event": "NCAA Tournament", "seed": "No. 7 seed, Midwest", "finish": "Lost in the second round", "rounds": {"2026-03-20-santa-clara": "First round", "2026-03-22-iowa-state": "Second round"}}]};</script>
 <script src="../vendor/d3.min.js"></script>
 <script src="../shim.js"></script>
 </head>
@@ -213,6 +225,8 @@
     <p class="kl-status kl-status-early" hidden>Lineup data so far includes <b data-draw="exh-kept" data-source="exh_status" data-field="exhibitions_kept">—</b> exhibition <span data-draw="exh-noun">—</span>, which don't count toward the record. From the 4th official game on, each new official game replaces one exhibition, so after <span data-draw="exh-end" data-source="exh_status" data-field="final_game">—</span> the data is official games only.</p>
     <p class="kl-status kl-status-late" hidden><b data-draw="exh-kept" data-source="exh_status" data-field="exhibitions_kept">—</b> exhibition <span data-draw="exh-noun">—</span> still included. Exhibitions don't count toward the record and drop out after <span data-draw="exh-end" data-source="exh_status" data-field="final_game">—</span>.</p>
   </header>
+
+  <section class="kl-card" id="postseason" data-draw="postseason" hidden></section>
 
   <div class="kl-controls">
     <label>Games
@@ -1403,6 +1417,34 @@
   });
   dash.draw('up-next', (el) => { const m = (kl.rows('notables_meta') || [])[0]; if (!m) return kl.dash(el); el.setAttribute('data-where', 'key=season'); el.textContent = m.next_milestone; });
   dash.draw('up-await', (el) => { const m = (kl.rows('notables_meta') || [])[0]; if (!m) return kl.dash(el); el.setAttribute('data-where', 'key=season'); el.textContent = m.awaiting; });
+  // Postseason summary: only for seasons whose settings list their tournaments (completed seasons on the public site).
+  dash.draw('postseason', (el) => {
+    const ps = (window.KL_SEASON || {}).postseason, sch = kl.rows('schedule') || [];
+    el.hidden = !(ps && ps.length && sch.length); if (el.hidden) return;
+    el.replaceChildren();
+    const h = document.createElement('h2'); h.textContent = 'Postseason'; el.append(h);
+    const wrap = document.createElement('div'); wrap.className = 'kl-ps'; el.append(wrap);
+    const byId = new Map(sch.map((g) => [g.game_id, g])), fmt = d3.utcFormat('%b %-d');
+    ps.forEach((t) => {
+      const col = document.createElement('div');
+      const h3 = document.createElement('h3'); h3.textContent = t.event;
+      const games = Object.keys(t.rounds).map((id) => byId.get(id)).filter(Boolean).sort((a, b) => a.date < b.date ? -1 : 1);
+      const w = games.filter((g) => /^W/.test(g.result || '')).length, l = games.length - w;
+      const sub = document.createElement('p'); sub.className = 'kl-ps-sub';
+      const fin = document.createElement('b'); fin.textContent = t.finish;
+      sub.append(t.seed + ' · ' + w + '–' + l + ' · ', fin);
+      const ol = document.createElement('ol');
+      games.forEach((g) => {
+        const li = document.createElement('li');
+        const cell = (cls, txt) => { const sp = document.createElement('span'); sp.className = cls; sp.textContent = txt; li.append(sp); return sp; };
+        cell('kl-ps-date', fmt(new Date(g.date + 'T12:00:00Z'))); cell('kl-ps-round', t.rounds[g.game_id]); cell('kl-ps-opp', 'vs. ' + g.opponent);
+        cell('kl-ps-res ' + (/^W/.test(g.result) ? 'kl-pos' : 'kl-neg'), g.result);
+        ol.append(li);
+      });
+      col.append(h3, sub, ol); wrap.append(col);
+    });
+  });
+
   dash.draw('method-positions', (el) => {
     const groups = new Map();
     Object.entries(POSITIONS).forEach(([n, ps]) => { const k = ps.join('/'); (groups.get(k) || groups.set(k, []).get(k)).push(n); });
