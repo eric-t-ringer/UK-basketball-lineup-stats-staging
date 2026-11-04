@@ -73,6 +73,7 @@
   
   
   
+  
   .kl { font-family: var(--font-anthropic-sans); color: var(--color-fg); display: grid; gap: var(--cds-gap-lg); }
   .kl-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0 0 var(--cds-gap-xs); }
   .kl-take { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); line-height: 1.5; }
@@ -1412,11 +1413,11 @@
   dash.draw('onoff-dek', (el) => {
     el.replaceChildren();
     const st = onoffState(); el.hidden = !(st.ready && st.charted.length); if (el.hidden) return;
-    const on = document.createElement('b'); on.style.color = dash.colors[0]; on.textContent = 'with a player on the floor';
-    const off = document.createElement('b'); off.style.color = 'var(--color-fg-muted)'; off.textContent = 'with him on the bench';
+    const on = document.createElement('b'); on.style.color = dash.colors[0]; on.textContent = 'with him on the floor';
+    const off = document.createElement('b'); off.style.color = 'var(--color-fg-muted)'; off.textContent = 'with a player on the bench';
     const worse = document.createElement('b'); worse.style.color = 'var(--cds-chart-status-critical)'; worse.textContent = 'Red';
     const sch = kl.rows('schedule') || [], done = sch.length > 0 && sch.every((x) => x.result);
-    el.append("Each line connects Kentucky's scoring margin per 40 minutes ", on, ' and ', off, done ? '. Long blue lines mark the players the team leaned on. ' : '. Long blue lines mark the players the team has leaned on. ', worse, done ? ' lines mean the team did better with him sitting.' : ' lines mean the team has done better with him sitting.');
+    el.append("Each arrow runs from Kentucky's scoring margin per 40 minutes ", off, ' to its margin ', on, done ? '. Long blue arrows mark the players the team leaned on. ' : '. Long blue arrows mark the players the team has leaned on. ', worse, done ? ' arrows point left: the team did better with him sitting.' : ' arrows point left: the team has done better with him sitting.');
     if (st.major) el.append(` This chart counts only the ${st.games} games against SEC, other major-conference and postseason opponents. Starters sit mostly in lopsided wins over weaker teams, which makes their bench numbers look better than they were. Choose “Official games only” in the Games filter to include every game.`);
   });
   dash.draw('onoff-wait', (el) => {
@@ -1463,6 +1464,10 @@
     g.append('line').attr('x1', (r) => x(r.off_net40)).attr('x2', (r) => x(r.on_net40)).attr('stroke', col).attr('stroke-width', 3).attr('stroke-linecap', 'round').attr('opacity', 0.9);
     g.append('circle').attr('cx', (r) => x(r.off_net40)).attr('r', 5.5).attr('fill', 'var(--color-panel)').attr('stroke', 'var(--cds-chart-muted)').attr('stroke-width', 2);
     g.append('circle').attr('cx', (r) => x(r.on_net40)).attr('r', 6).attr('fill', col);
+    // Arrowhead pointing from the bench dot to the on-floor dot, so each row shows which way the team did better.
+    g.filter((r) => Math.abs(x(r.on_net40) - x(r.off_net40)) > 26).append('path')
+      .attr('d', (r) => { const d = Math.sign(r.on_net40 - r.off_net40), tip = x(r.on_net40) - d * 8, base = tip - d * 10; return `M${base},-6L${tip},0L${base},6Z`; })
+      .attr('fill', col);
     g.append('text').attr('x', W - 2).attr('dy', '0.35em').attr('text-anchor', 'end').attr('fill', col).style('font-size', 'var(--cds-font-size-body)').style('font-weight', 600)
       .style('font-variant-numeric', 'tabular-nums').text((r) => kl.signed(r.on_off, 1));
     // Direct labels on the top row instead of a legend.
