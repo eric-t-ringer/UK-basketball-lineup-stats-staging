@@ -74,6 +74,7 @@
   
   
   
+  
   .kl { font-family: var(--font-anthropic-sans); color: var(--color-fg); display: grid; gap: var(--cds-gap-lg); }
   .kl-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0 0 var(--cds-gap-xs); }
   .kl-take { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); line-height: 1.5; }
@@ -158,6 +159,8 @@
   .kl-method { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.5; }
   .kl-method h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); color: var(--color-fg); margin: 0 0 var(--cds-gap-xs); }
   .kl-method p { margin: 0 0 var(--cds-gap-xs); }
+  .kl a.kl-box { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .kl a.kl-box:hover, .kl a.kl-box:focus-visible { text-decoration-thickness: 2px; }
   .kl-method .kl-credit { margin-top: var(--cds-gap-sm); color: var(--cds-color-fg, inherit); }
   .kl-method .kl-credit a { color: inherit; text-underline-offset: 3px; }
   .kl th.kl-left, .kl td.kl-left { text-align: left; }
@@ -558,7 +561,7 @@
 
   <section class="kl-card" id="games">
     <h2>Game log</h2>
-    <p class="kl-note">Every game on the schedule. Lineup data is usually added the night of each game, once the official box score is posted. "In main view" shows which games count toward the main view's numbers.</p>
+    <p class="kl-note">Every game on the schedule; click a result to open the official box score (PDF). Lineup data is usually added the night of each game, once the official box score is posted. "In main view" shows which games count toward the main view's numbers.</p>
     <div class="kl-scroll">
       <table data-source="game_summary" data-row-key="game_id">
         <thead><tr>
@@ -1040,7 +1043,7 @@
       mine.forEach((r) => { by[r.lineup] = (by[r.lineup] || 0) + Number(r.seconds); });
       const top = Object.entries(by).sort((a, b) => b[1] - a[1])[0];
       return {game_id: g.game_id, date: g.date, opponent: g.opponent, opponent_label: g.game_type === 'Exhibition' ? g.opponent + ' · Exhibition' : g.opponent, site: g.site, result: g.result || (g.tipoff_et ? g.tipoff_et + ' ET' : ''),
-        lineups_used: mine.length ? Object.keys(by).length : null, top_lineup: top ? top[0] : null, top_minutes: top ? Math.round(top[1] / 6) / 10 : null,
+        lineups_used: mine.length ? Object.keys(by).length : null, top_lineup: top ? top[0] : null, top_minutes: top ? Math.round(top[1] / 6) / 10 : null, box_score: g.result && g.box_score_url ? g.box_score_url : null,
         main_view: !mine.length ? null : phasedOut.has(g.game_id) ? 'Phased out' : 'Yes'};
       });
     },
@@ -1062,6 +1065,13 @@
     dash: (el) => { el.textContent = '—'; },
   };
   window.kl = kl;
+  // Turns a result cell into a link to the official box score (a PDF on UK Athletics), opening in a new tab.
+  kl.boxLink = (cell, url, text, opp) => {
+    if (!/^https:\/\/storage\.googleapis\.com\/ukathletics-com\//.test(url)) return;
+    const a = document.createElement('a'); a.className = 'kl-box'; a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.textContent = text; a.setAttribute('aria-label', `${text} vs. ${opp}, official box score (PDF, opens in a new tab)`);
+    cell.replaceChildren(a);
+  };
 
   // Approximate positions, for display order only (point guard to center). Each player's positions in order of preference;
   // the 1 goes to the first of POINT_PRIORITY on the floor, then the rest fill the spots closest to their preferences.
@@ -1519,7 +1529,8 @@
         const li = document.createElement('li');
         const cell = (cls, txt) => { const sp = document.createElement('span'); sp.className = cls; sp.textContent = txt; li.append(sp); return sp; };
         cell('kl-ps-date', fmt(new Date(g.date + 'T12:00:00Z'))); cell('kl-ps-round', t.rounds[g.game_id]); cell('kl-ps-opp', 'vs. ' + g.opponent);
-        cell('kl-ps-res ' + (/^W/.test(g.result) ? 'kl-pos' : 'kl-neg'), g.result);
+        const rc = cell('kl-ps-res ' + (/^W/.test(g.result) ? 'kl-pos' : 'kl-neg'), g.result);
+        if (g.result && g.box_score_url) kl.boxLink(rc, g.box_score_url, g.result, g.opponent);
         ol.append(li);
       });
       col.append(h3, sub, ol); wrap.append(col);
@@ -1576,7 +1587,8 @@
     rows.slice().sort((a, b) => a.date < b.date ? -1 : 1).forEach((r) => {
       const tr = tb.insertRow(); tr.dataset.key = kl.enc(r.game_id);
       td(tr, fmt(new Date(r.date + 'T12:00:00Z'))); (() => { const c = td(tr, r.opponent, 'kl-left'); if (r.opponent_label !== r.opponent) { const t = document.createElement('span'); t.className = 'kl-tag'; t.textContent = r.opponent_label.slice(r.opponent.length); c.append(t); } })(); td(tr, r.site, '', 'kl-hide-sm');
-      td(tr, r.result || '—', r.result && r.result[0] === 'W' ? 'kl-pos' : r.result && r.result[0] === 'L' ? 'kl-neg' : '');
+      const rc = td(tr, r.result || '—', r.result && r.result[0] === 'W' ? 'kl-pos' : r.result && r.result[0] === 'L' ? 'kl-neg' : '');
+      if (r.box_score) kl.boxLink(rc, r.box_score, r.result, r.opponent);
       td(tr, r.lineups_used === null ? '—' : String(r.lineups_used));
       const c = td(tr, r.top_lineup ? kl.ordered(r.top_lineup) : '—', 'kl-left', 'kl-hide-sm'); c.style.whiteSpace = 'normal';
       td(tr, r.top_minutes === null ? '—' : r.top_minutes.toFixed(1), '', 'kl-hide-sm');

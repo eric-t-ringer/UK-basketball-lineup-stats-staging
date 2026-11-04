@@ -8,7 +8,8 @@
 "tipoff_et": null,
 "game_type": "Exhibition",
 "result": "W 69-49",
-"lineups_loaded": true
+"lineups_loaded": true,
+"box_score_url": "https://storage.googleapis.com/ukathletics-com/2026/10/12389d28-uk_lr_book_101626.pdf"
 },
 {
 "game_id": "2026-10-23-texas-tech",
@@ -19,7 +20,8 @@
 "tipoff_et": null,
 "game_type": "Exhibition",
 "result": "W 76-65",
-"lineups_loaded": true
+"lineups_loaded": true,
+"box_score_url": "https://storage.googleapis.com/ukathletics-com/2026/10/ac42b0ec-uk_ttu_book_102326.pdf"
 },
 {
 "game_id": "2026-10-28-ucf",
@@ -30,7 +32,8 @@
 "tipoff_et": null,
 "game_type": "Exhibition",
 "result": "W 90-76 (OT)",
-"lineups_loaded": true
+"lineups_loaded": true,
+"box_score_url": "https://storage.googleapis.com/ukathletics-com/2026/10/c7734f21-uk_ucf_book_102826.pdf"
 },
 {
 "game_id": "2026-11-03-manhattan",
@@ -41,7 +44,8 @@
 "tipoff_et": "7:00 pm",
 "game_type": "Regular season",
 "result": "W 85-57",
-"lineups_loaded": true
+"lineups_loaded": true,
+"box_score_url": "https://storage.googleapis.com/ukathletics-com/2026/11/1559b8ba-uk_man_book_110326.pdf"
 },
 {
 "game_id": "2026-11-06-james-madison",
